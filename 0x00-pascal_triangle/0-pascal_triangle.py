@@ -3,12 +3,22 @@
 
 
 def pascal_triangle(n):
-    if (n <= 0):
-        return "Empty list"
+    if n <= 0:
+        return []
 
-    for i in range(n):
-        # adjust space
-        print(' '*(n-i), end='')
+    if n == 1:
+        return [[1, ], ]
 
-        # compute power of 11
-        print(' '.join(map(str, str(11**i))))
+    if n == 2:
+        return [[1, ], [1, 1]]
+
+    pascal = [[1, ], [1, 1]]
+
+    for i in range(3, n + 1):
+        row = [1, ]
+
+        for x in range(len(pascal[-1] - 1)):
+            row.append(pascal[-1][x] + pascal[-1][x + 1])
+        row.append(1)
+        pascal.append(row)
+    return pascal
