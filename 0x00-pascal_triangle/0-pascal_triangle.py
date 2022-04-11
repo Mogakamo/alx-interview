@@ -3,6 +3,9 @@
 
 
 def pascal_triangle(n):
+    if (n <= 0):
+        return "Empty list"
+
     for i in range(n):
         # adjust space
         print(' '*(n-i), end='')
