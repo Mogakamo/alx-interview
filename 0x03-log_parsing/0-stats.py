@@ -1,30 +1,50 @@
 #!/usr/bin/python3
-""" Parses Logs """
+"""
+Script that reads stdin line by line and computes metrics:
+Input format: <IP Address> - [<date>] "GET /projects/260 HTTP/1.1" <status
+                code> <file size>
+"""
+
 import sys
+code = {"200": 0, "301": 0, "400": 0, "401": 0,
+        "403": 0, "404": 0, "405": 0, "500": 0}
+sum = 0
 
 
-i = 0
-FileSize = 0
-status = {'200': 0, '301': 0, '400': 0, '401': 0,
-          '403': 0, '404': 0, '405': 0, '500': 0}
-codes = ['200', '301', '400', '401', '403', '404', '405', '500']
-try:
-    for line in sys.stdin:
-        i += 1
-        sp = line.split(' ')
-        if len(sp) > 2:
-            FileSize += int(sp[-1])
-            if sp[-2] in status:
-                status[sp[-2]] += 1
-        if i % 10 == 0:
-            print("File size: {}".format(FileSize))
-            for code in codes:
-                if status[code]:
-                    print("{}: {}".format(code, status[code]))
-except KeyboardInterrupt:
-    pass
-finally:
-    print("File size: {}".format(FileSize))
-    for code in codes:
-        if status[code]:
-            print("{}: {}".format(code, status[code]))
+def print_stats():
+    """
+    Function that print stats about log
+    """
+    global sum
+
+    print('File size: {}'.format(sum))
+    stcdor = sorted(code.keys())
+    for each in stcdor:
+        if code[each] > 0:
+            print('{}: {}'.format(each, code[each]))
+
+
+if __name__ == "__main__":
+    cnt = 0
+    try:
+        """ Iterate the standard input """
+        for data in sys.stdin:
+            try:
+                fact = data.split(' ')
+                """ If there is a status code """
+                if fact[-2] in code:
+                    code[fact[-2]] += 1
+                """ If there is a length """
+                sum += int(fact[-1])
+            except Exception:
+                pass
+            """ Printing control """
+            cnt += 1
+            if cnt == 10:
+                print_stats()
+                cnt = 0
+    except KeyboardInterrupt:
+        print_stats()
+        raise
+    else:
+        print_stats()
